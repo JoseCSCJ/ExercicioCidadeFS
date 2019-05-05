@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_CHOOSE = 1234;
     private ImageView imageSelector;
+    private EditText local, cidade, estado;
     private List<Uri> mSelected;
     private StorageReference mStorage;
     private FirebaseFirestore db;
@@ -45,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imageSelector = findViewById(R.id.imageSelector);
+        local = findViewById(R.id.local);
+        cidade = findViewById(R.id.cidade);
+        estado = findViewById(R.id.estado);
         mStorage = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
         Picasso.get().load(R.drawable.placeholder).into(imageSelector);
@@ -67,14 +72,18 @@ public class MainActivity extends AppCompatActivity {
                 userRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        CollectionReference colecao = db.collection("users").document(mUser.getEmail()).collection("links");
+                        CollectionReference colecao = db.collection("local").document(mUser.getEmail()).collection("foto");
                         Map<String,Object> link = new HashMap<>();
-                        link.put("link",uri.toString());
+                        link.put("foto",uri.toString());
+                        link.put("local", local.getText().toString());
+                        link.put("cidade", cidade.getText().toString());
+                        link.put("estado", estado.getText().toString());
                         colecao.add(link);
                         Toast.makeText(MainActivity.this, "Tarefa Executada!", Toast.LENGTH_SHORT).show();
                         Picasso.get().load(R.drawable.placeholder).into(imageSelector);
                     }
                 });
+
             }
         });
     }

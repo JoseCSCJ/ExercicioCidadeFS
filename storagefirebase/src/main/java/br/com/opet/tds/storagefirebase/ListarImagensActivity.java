@@ -1,15 +1,12 @@
 package br.com.opet.tds.storagefirebase;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +23,7 @@ import java.util.List;
 public class ListarImagensActivity extends AppCompatActivity {
 
     private ListView listImage;
+    private TextView local, cidade, estado;
     private CollectionReference collection;
     private FirebaseFirestore db;
     private FirebaseUser mUser;
@@ -46,16 +44,18 @@ public class ListarImagensActivity extends AppCompatActivity {
     }
 
     private void loadImages() {
-        CollectionReference colecao = db.collection("users").document(mUser.getEmail()).collection("links");
-        colecao.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        CollectionReference colecao = db.collection("local").document(mUser.getEmail()).collection("foto");
+        colecao
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<Uri> urls = new ArrayList<>();
                 for(DocumentSnapshot doc : queryDocumentSnapshots){
-                    String url = doc.get("link").toString();
+                    String url = doc.get("foto").toString();
                     urls.add(Uri.parse(url));
                 }
-                ArrayAdapter<Uri> adapter = new ImagemAdapter(ListarImagensActivity.this,R.layout.image_item,urls);
+                ArrayAdapter<Uri> adapter = new CidadeAdapter(ListarImagensActivity.this,R.layout.image_item,urls);
                 listImage.setAdapter(adapter);
             }
         });
